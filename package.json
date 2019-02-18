@@ -12,6 +12,7 @@
     "Christian Werner <christian.werner@5minds.de>"
   ],
   "dependencies": {
+    "@essential-projects/errors_ts": "^1.4.3",
     "@process-engine/correlation.contracts": "feature~initial_implementation"
   },
   "devDependencies": {
