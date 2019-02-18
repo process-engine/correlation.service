@@ -13,7 +13,8 @@
   ],
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "feature~initial_implementation"
+    "@process-engine/correlation.contracts": "feature~initial_implementation",
+    "@process-engine/process_model.contracts": "feature~initial_implementation"
   },
   "devDependencies": {
     "@essential-projects/tslint-config": "^1.1.3",
