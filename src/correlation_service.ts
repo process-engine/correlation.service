@@ -11,6 +11,11 @@ import {
   ICorrelationService,
 } from '@process-engine/correlation.contracts';
 
+import {
+  IProcessDefinitionRepository,
+  ProcessDefinitionFromRepository,
+} from '@process-engine/process_model.contracts';
+
 /**
  * Groups ProcessModelHashes by their associated CorrelationId.
  *
