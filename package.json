@@ -3,7 +3,7 @@
   "publishConfig": {
     "registry": "https://www.npmjs.com"
   },
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Contains the service layer for the Correlation API.",
   "license": "MIT",
   "main": "dist/commonjs/index.js",
@@ -12,7 +12,9 @@
     "Christian Werner <christian.werner@5minds.de>"
   ],
   "dependencies": {
-    "@process-engine/correlation.contracts": "^0.0.1"
+    "@essential-projects/errors_ts": "^1.4.3",
+    "@process-engine/correlation.contracts": "^1.0.0",
+    "@process-engine/process_model.contracts": "^1.0.0"
   },
   "devDependencies": {
     "@essential-projects/tslint-config": "^1.1.3",
