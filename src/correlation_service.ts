@@ -248,6 +248,7 @@ export class CorrelationService implements ICorrelationService {
       parsedCorrelation.processModels = [];
 
       for (const correlationFromRepo of correlationsFromRepo) {
+      
         /**
          * As long as there is at least one running ProcessInstance within a correlation,
          * the correlation will always have a running state, no matter how many
