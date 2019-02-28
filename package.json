@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "feature~fix_finishing_of_correlations",
+    "@process-engine/correlation.contracts": "^1.0.2",
     "@process-engine/process_model.contracts": "^2.0.0"
   },
   "devDependencies": {
