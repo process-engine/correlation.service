@@ -156,14 +156,14 @@ export class CorrelationService implements ICorrelationService {
     await this._correlationRepository.deleteCorrelationByProcessModelId(processModelId);
   }
 
-  public async finishCorrelation(identity: IIdentity, correlationId: string): Promise<void> {
+  public async finishProcessInstanceInCorrelation(identity: IIdentity, correlationId: string, processInstanceId: string): Promise<void> {
     await this._iamService.ensureHasClaim(identity, canReadProcessModelClaim);
-    await this._correlationRepository.finishCorrelation(correlationId);
+    await this._correlationRepository.finishProcessInstanceInCorrelation(correlationId, processInstanceId);
   }
 
-  public async finishWithError(identity: IIdentity, correlationId: string, error: Error): Promise<void> {
+  public async finishProcessInstanceInCorrelationWithError(identity: IIdentity, correlationId: string, processInstanceId: string, error: Error): Promise<void> {
     await this._iamService.ensureHasClaim(identity, canReadProcessModelClaim);
-    await this._correlationRepository.finishWithError(correlationId, error);
+    await this._correlationRepository.finishProcessInstanceInCorrelationWithError(correlationId, processInstanceId, error);
   }
 
   private _filterCorrelationsFromRepoByIdentity(
