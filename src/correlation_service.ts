@@ -177,7 +177,11 @@ export class CorrelationService implements ICorrelationService {
   ): Array<CorrelationFromRepository> {
 
     return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository) => {
-      return identity.userId === correlationFromRepo.identity.userId;
+      // Correlations that were created with the dummy token are visible to everybody.
+      const isDummyToken: boolean = correlationFromRepo.identity.userId === 'dummy_token';
+      const userIdsMatch: boolean = identity.userId === correlationFromRepo.identity.userId;
+
+      return isDummyToken || userIdsMatch;
     });
   }
 
