@@ -254,7 +254,7 @@ export class CorrelationService implements ICorrelationService {
     parsedCorrelation.createdAt = correlationsFromRepo[0].createdAt;
 
     if (correlationsFromRepo) {
-      parsedCorrelation.processModels = [];
+      parsedCorrelation.processInstances = [];
 
       for (const correlationFromRepo of correlationsFromRepo) {
 
@@ -293,7 +293,7 @@ export class CorrelationService implements ICorrelationService {
           processModel.error = correlationFromRepo.error;
         }
 
-        parsedCorrelation.processModels.push(processModel);
+        parsedCorrelation.processInstances.push(processModel);
       }
     }
 
