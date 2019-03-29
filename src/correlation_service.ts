@@ -250,11 +250,10 @@ export class CorrelationService implements ICorrelationService {
 
     const parsedCorrelation: Correlation = new Correlation();
     parsedCorrelation.id = correlationId;
-    parsedCorrelation.identity = correlationsFromRepo[0].identity;
     parsedCorrelation.createdAt = correlationsFromRepo[0].createdAt;
 
     if (correlationsFromRepo) {
-      parsedCorrelation.processModels = [];
+      parsedCorrelation.processInstances = [];
 
       for (const correlationFromRepo of correlationsFromRepo) {
 
@@ -288,12 +287,13 @@ export class CorrelationService implements ICorrelationService {
         processModel.parentProcessInstanceId = correlationFromRepo.parentProcessInstanceId;
         processModel.createdAt = correlationFromRepo.createdAt;
         processModel.state = correlationFromRepo.state;
+        processModel.identity = correlationFromRepo.identity;
 
         if (correlationEntryHasErrorAttached) {
           processModel.error = correlationFromRepo.error;
         }
 
-        parsedCorrelation.processModels.push(processModel);
+        parsedCorrelation.processInstances.push(processModel);
       }
     }
 
