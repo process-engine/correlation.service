@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "1.0.2-af15aac2-b7",
+    "@process-engine/correlation.contracts": "^2.0.0",
     "@process-engine/process_model.contracts": "^2.0.0"
   },
   "devDependencies": {
