@@ -189,12 +189,12 @@ export class CorrelationService implements ICorrelationService {
 
     const userIsSuperAdmin: boolean = identity.userId !== 'dummy_token' && await isUserSuperAdmin();
 
-    return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository) => {
+    // Super Admins can always see everything.
+    if (userIsSuperAdmin) {
+      return correlationsFromRepo;
+    }
 
-      // Super Admins can always see everything.
-      if (userIsSuperAdmin) {
-        return true;
-      }
+    return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository) => {
 
       // Correlations that were created with the dummy token are visible to everybody.
       const isDummyToken: boolean = correlationFromRepo.identity.userId === 'dummy_token';
