@@ -25,6 +25,7 @@ type GroupedCorrelations = {
   [correlationId: string]: Array<CorrelationFromRepository>,
 };
 
+const superAdminClaim: string = 'can_manage_process_instances';
 const canReadProcessModelClaim: string = 'can_read_process_model';
 const canDeleteProcessModel: string = 'can_delete_process_model';
 
@@ -61,7 +62,7 @@ export class CorrelationService implements ICorrelationService {
       = await this._correlationRepository.getCorrelationsByState(CorrelationState.running);
 
     const filteredCorrelationsFromRepo: Array<CorrelationFromRepository>
-      = this._filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
+      = await this._filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
 
     const activeCorrelationsForIdentity: Array<Correlation>
       = await this._mapCorrelationList(filteredCorrelationsFromRepo);
@@ -75,7 +76,7 @@ export class CorrelationService implements ICorrelationService {
     const correlationsFromRepo: Array<CorrelationFromRepository> = await this._correlationRepository.getAll();
 
     const filteredCorrelationsFromRepo: Array<CorrelationFromRepository> =
-      this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
+      await this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     const correlations: Array<Correlation> = await this._mapCorrelationList(filteredCorrelationsFromRepo);
 
@@ -89,7 +90,7 @@ export class CorrelationService implements ICorrelationService {
       await this._correlationRepository.getByProcessModelId(processModelId);
 
     const filteredCorrelationsFromRepo: Array<CorrelationFromRepository> =
-      this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
+      await this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     const correlations: Array<Correlation> = await this._mapCorrelationList(filteredCorrelationsFromRepo);
 
@@ -105,7 +106,7 @@ export class CorrelationService implements ICorrelationService {
       await this._correlationRepository.getByCorrelationId(correlationId);
 
     const filteredCorrelationsFromRepo: Array<CorrelationFromRepository>
-      = this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
+      = await this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     // All correlations will have the same ID here, so we can just use the top entry as a base.
     const noFilteredCorrelationsFromRepo: boolean = filteredCorrelationsFromRepo.length === 0;
@@ -138,7 +139,7 @@ export class CorrelationService implements ICorrelationService {
       await this._correlationRepository.getSubprocessesForProcessInstance(processInstanceId);
 
     const filteredCorrelationsFromRepo: Array<CorrelationFromRepository> =
-      this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
+      await this._filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     const noFilteredCorrelations: boolean = filteredCorrelationsFromRepo.length === 0;
     if (noFilteredCorrelations) {
@@ -171,12 +172,28 @@ export class CorrelationService implements ICorrelationService {
     await this._correlationRepository.finishProcessInstanceInCorrelationWithError(correlationId, processInstanceId, error);
   }
 
-  private _filterCorrelationsFromRepoByIdentity(
+  private async _filterCorrelationsFromRepoByIdentity(
     identity: IIdentity,
     correlationsFromRepo: Array<CorrelationFromRepository>,
-  ): Array<CorrelationFromRepository> {
+  ): Promise<Array<CorrelationFromRepository>> {
+
+    const isUserSuperAdmin: any = async (): Promise<boolean> => {
+      try {
+        await this._iamService.ensureHasClaim(identity, superAdminClaim);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    const userIsSuperAdmin: boolean = await isUserSuperAdmin();
 
     return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository) => {
+
+      // Super Admins can always see everything.
+      if (userIsSuperAdmin) {
+        return true;
+      }
+
       // Correlations that were created with the dummy token are visible to everybody.
       const isDummyToken: boolean = correlationFromRepo.identity.userId === 'dummy_token';
       const userIdsMatch: boolean = identity.userId === correlationFromRepo.identity.userId;
