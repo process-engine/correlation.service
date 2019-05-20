@@ -180,12 +180,14 @@ export class CorrelationService implements ICorrelationService {
     const isUserSuperAdmin: any = async (): Promise<boolean> => {
       try {
         await this._iamService.ensureHasClaim(identity, superAdminClaim);
+
+        return true;
       } catch (error) {
         return false;
       }
     }
 
-    const userIsSuperAdmin: boolean = await isUserSuperAdmin();
+    const userIsSuperAdmin: boolean = identity.userId !== 'dummy_token' && await isUserSuperAdmin();
 
     return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository) => {
 
