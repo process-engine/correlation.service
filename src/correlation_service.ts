@@ -57,7 +57,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getActive(identity: IIdentity): Promise<Array<Correlation>> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running);
 
@@ -69,7 +69,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getAll(identity: IIdentity): Promise<Array<Correlation>> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getAll();
 
@@ -81,7 +81,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getByProcessModelId(identity: IIdentity, processModelId: string): Promise<Array<Correlation>> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
 
@@ -93,7 +93,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getByCorrelationId(identity: IIdentity, correlationId: string): Promise<Correlation> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     // NOTE:
     // These will already be ordered by their createdAt value, with the oldest one at the top.
@@ -113,7 +113,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getByProcessInstanceId(identity: IIdentity, processInstanceId: string): Promise<Correlation> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const correlationFromRepo = await this.correlationRepository.getByProcessInstanceId(processInstanceId);
 
@@ -123,7 +123,7 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async getSubprocessesForProcessInstance(identity: IIdentity, processInstanceId: string): Promise<Correlation> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getSubprocessesForProcessInstance(processInstanceId);
 
@@ -140,12 +140,12 @@ export class CorrelationService implements ICorrelationService {
   }
 
   public async deleteCorrelationByProcessModelId(identity: IIdentity, processModelId: string): Promise<void> {
-    await this.iamService.ensureHasClaim(identity, canDeleteProcessModel);
+    await this.ensureUserHasClaim(identity, canDeleteProcessModel);
     await this.correlationRepository.deleteCorrelationByProcessModelId(processModelId);
   }
 
   public async finishProcessInstanceInCorrelation(identity: IIdentity, correlationId: string, processInstanceId: string): Promise<void> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
     await this.correlationRepository.finishProcessInstanceInCorrelation(correlationId, processInstanceId);
   }
 
@@ -155,7 +155,7 @@ export class CorrelationService implements ICorrelationService {
     processInstanceId: string,
     error: Error,
   ): Promise<void> {
-    await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
     await this.correlationRepository.finishProcessInstanceInCorrelationWithError(correlationId, processInstanceId, error);
   }
 
@@ -164,17 +164,7 @@ export class CorrelationService implements ICorrelationService {
     correlationsFromRepo: Array<CorrelationFromRepository>,
   ): Promise<Array<CorrelationFromRepository>> {
 
-    const isUserSuperAdmin = async (): Promise<boolean> => {
-      try {
-        await this.iamService.ensureHasClaim(identity, superAdminClaim);
-
-        return true;
-      } catch (error) {
-        return false;
-      }
-    };
-
-    const userIsSuperAdmin = identity.userId !== 'dummy_token' && await isUserSuperAdmin();
+    const userIsSuperAdmin = identity.userId !== 'dummy_token' && await this.checkIfUserIsSuperAdmin(identity);
 
     // Super Admins can always see everything.
     if (userIsSuperAdmin) {
@@ -280,6 +270,26 @@ export class CorrelationService implements ICorrelationService {
     }
 
     return parsedCorrelation;
+  }
+
+  private async ensureUserHasClaim(identity: IIdentity, claimName: string): Promise<void> {
+
+    const userIsSuperAdmin = await this.checkIfUserIsSuperAdmin(identity);
+    if (userIsSuperAdmin) {
+      return;
+    }
+
+    await this.iamService.ensureHasClaim(identity, claimName);
+  }
+
+  private async checkIfUserIsSuperAdmin(identity: IIdentity): Promise<boolean> {
+    try {
+      await this.iamService.ensureHasClaim(identity, superAdminClaim);
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
 }
