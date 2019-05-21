@@ -204,14 +204,6 @@ export class CorrelationService implements ICorrelationService {
     });
   }
 
-  /**
-   * Maps a given List of CorrelationFromRepository objects into a List of
-   * Runtime Correlation objects.
-   *
-   * @async
-   * @param   correlationsFromRepo The Correlations to map.
-   * @returns                      The mapped Correlation.
-   */
   private async _mapCorrelationList(correlationsFromRepo: Array<CorrelationFromRepository>): Promise<Array<Correlation>> {
     const groupedCorrelations: GroupedCorrelations = this._groupCorrelations(correlationsFromRepo);
 
@@ -229,13 +221,6 @@ export class CorrelationService implements ICorrelationService {
     return mappedCorrelations;
   }
 
-  /**
-   * Takes a list of CorrelationFromRepository objects and groups them by their
-   * CorrelationId.
-   *
-   * @param   correlations The Correlations to group.
-   * @returns              The grouped Correlations.
-   */
   private _groupCorrelations(correlations: Array<CorrelationFromRepository>): GroupedCorrelations {
 
     const groupedCorrelations: GroupedCorrelations = {};
@@ -254,15 +239,6 @@ export class CorrelationService implements ICorrelationService {
     return groupedCorrelations;
   }
 
-  /**
-   * Maps a given list of CorrelationFromRepository objects into a,
-   * Correlation object, using the given CorrelationId as a base.
-   *
-   * @async
-   * @param   correlationId           The ID of the Correlation to map.
-   * @param   correlationEntriess     The list of entries to map.
-   * @returns                         The mapped Correlation.
-   */
   private async _mapCorrelation(correlationId: string,
                                 correlationsFromRepo?: Array<CorrelationFromRepository>,
                                ): Promise<Correlation> {
