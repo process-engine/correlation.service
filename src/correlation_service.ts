@@ -249,7 +249,9 @@ export class CorrelationService implements ICorrelationService {
           ? correlationFromRepo.state
           : CorrelationState.running;
 
-        const correlationEntryHasErrorAttached = correlationFromRepo.error !== undefined;
+        // Sequelize returns "null"-value column as an actual null, so null-checks are required here.
+        // eslint-disable-next-line no-null/no-null
+        const correlationEntryHasErrorAttached = correlationFromRepo.error !== undefined && correlationFromRepo.error !== null;
 
         if (correlationEntryHasErrorAttached) {
           parsedCorrelation.state = CorrelationState.error;
