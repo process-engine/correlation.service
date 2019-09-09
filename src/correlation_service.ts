@@ -69,9 +69,9 @@ export class CorrelationService implements ICorrelationService {
 
     const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    const paginizedCorrelations = this.applyPagination(correlations, offset, limit);
+    const correlationSubset = this.applyPagination(correlations, offset, limit);
 
-    return paginizedCorrelations;
+    return correlationSubset;
   }
 
   public async getActive(identity: IIdentity, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
@@ -83,9 +83,9 @@ export class CorrelationService implements ICorrelationService {
 
     const activeCorrelationsForIdentity = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    const paginizedCorrelations = this.applyPagination(activeCorrelationsForIdentity, offset, limit);
+    const correlationSubset = this.applyPagination(activeCorrelationsForIdentity, offset, limit);
 
-    return paginizedCorrelations;
+    return correlationSubset;
   }
 
   public async getByProcessModelId(identity: IIdentity, processModelId: string, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
@@ -97,9 +97,9 @@ export class CorrelationService implements ICorrelationService {
 
     const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    const paginizedCorrelations = this.applyPagination(correlations, offset, limit);
+    const correlationSubset = this.applyPagination(correlations, offset, limit);
 
-    return paginizedCorrelations;
+    return correlationSubset;
   }
 
   public async getByCorrelationId(identity: IIdentity, correlationId: string): Promise<Correlation> {
