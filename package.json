@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "^2.0.0",
+    "@process-engine/correlation.contracts": "feature~add_limit_and_offset_to_list_queries",
     "@process-engine/process_model.contracts": "feature~add_limit_and_offset_to_list_queries"
   },
   "devDependencies": {
