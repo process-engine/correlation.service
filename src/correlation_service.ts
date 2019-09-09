@@ -56,22 +56,10 @@ export class CorrelationService implements ICorrelationService {
       .createEntry(identity, correlationId, processInstanceId, processModelId, processModelHash, parentProcessInstanceId);
   }
 
-  public async getActive(identity: IIdentity): Promise<Array<Correlation>> {
+  public async getAll(identity: IIdentity, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
-    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running);
-
-    const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
-
-    const activeCorrelationsForIdentity = await this.mapCorrelationList(filteredCorrelationsFromRepo);
-
-    return activeCorrelationsForIdentity;
-  }
-
-  public async getAll(identity: IIdentity): Promise<Array<Correlation>> {
-    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
-
-    const correlationsFromRepo = await this.correlationRepository.getAll();
+    const correlationsFromRepo = await this.correlationRepository.getAll(offset, limit);
 
     const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
@@ -80,10 +68,22 @@ export class CorrelationService implements ICorrelationService {
     return correlations;
   }
 
-  public async getByProcessModelId(identity: IIdentity, processModelId: string): Promise<Array<Correlation>> {
+  public async getActive(identity: IIdentity, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
-    const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
+    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running, offset, limit);
+
+    const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
+
+    const activeCorrelationsForIdentity = await this.mapCorrelationList(filteredCorrelationsFromRepo);
+
+    return activeCorrelationsForIdentity;
+  }
+
+  public async getByProcessModelId(identity: IIdentity, processModelId: string, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
+
+    const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId, offset, limit);
 
     const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
