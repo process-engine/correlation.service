@@ -1,3 +1,5 @@
+import {Logger} from 'loggerhythm';
+
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
 import {NotFoundError} from '@essential-projects/errors_ts';
@@ -12,6 +14,8 @@ import {
 } from '@process-engine/correlation.contracts';
 
 import {IProcessDefinitionRepository} from '@process-engine/process_model.contracts';
+
+const logger = Logger.createLogger('processengine:correlation:service');
 
 /**
  * Groups ProcessModelHashes by their associated CorrelationId.
@@ -59,37 +63,43 @@ export class CorrelationService implements ICorrelationService {
   public async getAll(identity: IIdentity, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
-    const correlationsFromRepo = await this.correlationRepository.getAll(offset, limit);
+    const correlationsFromRepo = await this.correlationRepository.getAll();
 
     const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    return correlations;
+    const paginizedCorrelations = this.applyPagination(correlations, offset, limit);
+
+    return paginizedCorrelations;
   }
 
   public async getActive(identity: IIdentity, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
-    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running, offset, limit);
+    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running);
 
     const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
 
     const activeCorrelationsForIdentity = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    return activeCorrelationsForIdentity;
+    const paginizedCorrelations = this.applyPagination(activeCorrelationsForIdentity, offset, limit);
+
+    return paginizedCorrelations;
   }
 
   public async getByProcessModelId(identity: IIdentity, processModelId: string, offset: number = 0, limit: number = 0): Promise<Array<Correlation>> {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
-    const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId, offset, limit);
+    const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
 
     const filteredCorrelationsFromRepo = await this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
     const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
 
-    return correlations;
+    const paginizedCorrelations = this.applyPagination(correlations, offset, limit);
+
+    return paginizedCorrelations;
   }
 
   public async getByCorrelationId(identity: IIdentity, correlationId: string): Promise<Correlation> {
@@ -270,6 +280,31 @@ export class CorrelationService implements ICorrelationService {
     }
 
     return parsedCorrelation;
+  }
+
+  private applyPagination(correlations: Array<Correlation>, offset: number, limit: number): Array<Correlation> {
+
+    // NOTE:
+    // The Correlation Data type will be changed in the near future.
+    // TL;DR: It will be flattened, so that the ProcessInstances are no longer moved into a subarray.
+    // This will change the way that "offset" works entirely.
+    if (offset >= correlations.length) {
+      logger.warn(`Attempting an offset of ${offset} on a correlation list with ${correlations.length} entries. Defaulting to 0.`);
+      offset = 0;
+    }
+
+    let correlationSubset = offset > 0
+      ? correlations.slice(offset)
+      : correlations;
+
+    const limitIsOutsideOfCorrelationList = limit < 1 || limit >= correlationSubset.length;
+    if (limitIsOutsideOfCorrelationList) {
+      return correlationSubset;
+    }
+
+    correlationSubset = correlationSubset.slice(0, limit);
+
+    return correlationSubset;
   }
 
   private async ensureUserHasClaim(identity: IIdentity, claimName: string): Promise<void> {
