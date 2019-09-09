@@ -1,17 +1,25 @@
 {
   "name": "@process-engine/correlation.service",
-  "publishConfig": {
-    "registry": "https://www.npmjs.com"
-  },
   "version": "1.4.0",
   "description": "Contains the service layer for the Correlation API.",
-  "license": "MIT",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/process-engine/correlation.service.git"
+  },
   "author": "5Minds IT-Solutions GmbH & Co. KG",
-  "contributors": [
-    "Christian Werner <christian.werner@5minds.de>"
+  "maintainers": [
+    "Alexander Kasten <alexander.kasten@5minds.de>",
+    "Christian Werner <christian.werner@5minds.de>",
+    "René Föhring <rene.foehring@5minds.de>",
+    "Steffen Knaup <steffen.knaup@5minds.de>"
   ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/process-engine/correlation.service/issues"
+  },
+  "homepage": "https://github.com/process-engine/correlation.service#readme",
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
     "@process-engine/correlation.contracts": "feature~add_limit_and_offset_to_list_queries",
