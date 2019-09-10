@@ -288,7 +288,7 @@ export class CorrelationService implements ICorrelationService {
     // The Correlation Data type will be changed in the near future.
     // TL;DR: It will be flattened, so that the ProcessInstances are no longer moved into a subarray.
     // This will change the way that "offset" works entirely.
-    if (offset >= correlations.length) {
+    if (offset > correlations.length) {
       logger.warn(`Attempting an offset of ${offset} on a correlation list with ${correlations.length} entries. Defaulting to 0.`);
       offset = 0;
     }
