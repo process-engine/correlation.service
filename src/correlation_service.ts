@@ -2,7 +2,7 @@ import {Logger} from 'loggerhythm';
 
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
-import {NotFoundError} from '@essential-projects/errors_ts';
+import {ForbiddenError, NotFoundError} from '@essential-projects/errors_ts';
 
 import {
   Correlation,
@@ -126,6 +126,14 @@ export class CorrelationService implements ICorrelationService {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const processInstanceFromRepo = await this.correlationRepository.getByProcessInstanceId(processInstanceId);
+
+    if (identity.userId !== processInstanceFromRepo.identity.userId) {
+      const userIsSuperAdmin = await this.checkIfUserIsSuperAdmin(identity);
+
+      if (!userIsSuperAdmin) {
+        throw new ForbiddenError('Access denied');
+      }
+    }
 
     const processInstance = await this.mapProcessInstance(processInstanceFromRepo);
 
