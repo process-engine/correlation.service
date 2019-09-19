@@ -149,6 +149,72 @@ export class CorrelationService implements ICorrelationService {
     return processInstances;
   }
 
+  public async getProcessInstancesForCorrelation(
+    identity: IIdentity,
+    correlationId: string,
+    offset?: number,
+    limit?: number,
+  ): Promise<Array<ProcessInstance>> {
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
+
+    const processInstancesFromRepo = await this.correlationRepository.getByCorrelationId(correlationId);
+
+    const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
+
+    if (filteredProcessInstancesFromRepo.length === 0) {
+      return undefined;
+    }
+
+    const processInstances =
+      await Promise.map<ProcessInstanceFromRepository, ProcessInstance>(filteredProcessInstancesFromRepo, this.mapProcessInstance.bind(this));
+
+    return processInstances;
+  }
+
+  public async getProcessInstancesForProcessModel(
+    identity: IIdentity,
+    processModelId: string,
+    offset?: number,
+    limit?: number,
+  ): Promise<Array<ProcessInstance>> {
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
+
+    const processInstancesFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
+
+    const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
+
+    if (filteredProcessInstancesFromRepo.length === 0) {
+      return undefined;
+    }
+
+    const processInstances =
+      await Promise.map<ProcessInstanceFromRepository, ProcessInstance>(filteredProcessInstancesFromRepo, this.mapProcessInstance.bind(this));
+
+    return processInstances;
+  }
+
+  public async getProcessInstancesByState(
+    identity: IIdentity,
+    state: CorrelationState,
+    offset?: number,
+    limit?: number,
+  ): Promise<Array<ProcessInstance>> {
+    await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
+
+    const processInstancesFromRepo = await this.correlationRepository.getCorrelationsByState(state);
+
+    const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
+
+    if (filteredProcessInstancesFromRepo.length === 0) {
+      return undefined;
+    }
+
+    const processInstances =
+      await Promise.map<ProcessInstanceFromRepository, ProcessInstance>(filteredProcessInstancesFromRepo, this.mapProcessInstance.bind(this));
+
+    return processInstances;
+  }
+
   public async deleteCorrelationByProcessModelId(identity: IIdentity, processModelId: string): Promise<void> {
     await this.ensureUserHasClaim(identity, canDeleteProcessModel);
     await this.correlationRepository.deleteCorrelationByProcessModelId(processModelId);
