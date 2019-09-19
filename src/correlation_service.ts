@@ -93,6 +93,11 @@ export class CorrelationService implements ICorrelationService {
 
     const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
 
+    const noCorrelationsFound = !correlationsFromRepo || correlationsFromRepo.length === 0;
+    if (noCorrelationsFound) {
+      throw new NotFoundError(`No correlations for ProcessModel with ID "${processModelId}" found.`);
+    }
+
     const filteredCorrelationsFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, correlationsFromRepo);
 
     const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
@@ -108,6 +113,11 @@ export class CorrelationService implements ICorrelationService {
     // NOTE:
     // These will already be ordered by their createdAt value, with the oldest one at the top.
     const correlationsFromRepo = await this.correlationRepository.getByCorrelationId(correlationId);
+
+    const noCorrelationsFound = !correlationsFromRepo || correlationsFromRepo.length === 0;
+    if (noCorrelationsFound) {
+      throw new NotFoundError(`Correlation with id "${correlationId}" not found.`);
+    }
 
     const filteredCorrelationsFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, correlationsFromRepo);
 
@@ -167,6 +177,11 @@ export class CorrelationService implements ICorrelationService {
 
     const processInstancesFromRepo = await this.correlationRepository.getByCorrelationId(correlationId);
 
+    const noCorrelationsFound = !processInstancesFromRepo || processInstancesFromRepo.length === 0;
+    if (noCorrelationsFound) {
+      throw new NotFoundError(`Correlation with id "${correlationId}" not found.`);
+    }
+
     const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
 
     if (filteredProcessInstancesFromRepo.length === 0) {
@@ -189,6 +204,11 @@ export class CorrelationService implements ICorrelationService {
 
     const processInstancesFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
 
+    const noProcessInstancesFound = !processInstancesFromRepo || processInstancesFromRepo.length === 0;
+    if (noProcessInstancesFound) {
+      throw new NotFoundError(`No ProcessInstances for ProcessModel with ID "${processModelId}" found.`);
+    }
+
     const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
 
     if (filteredProcessInstancesFromRepo.length === 0) {
@@ -210,6 +230,11 @@ export class CorrelationService implements ICorrelationService {
     await this.ensureUserHasClaim(identity, canReadProcessModelClaim);
 
     const processInstancesFromRepo = await this.correlationRepository.getCorrelationsByState(state);
+
+    const noProcessInstancesFound = !processInstancesFromRepo || processInstancesFromRepo.length === 0;
+    if (noProcessInstancesFound) {
+      throw new NotFoundError(`No ProcessInstances in a "${state}" state found.`);
+    }
 
     const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
 
