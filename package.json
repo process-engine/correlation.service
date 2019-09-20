@@ -22,8 +22,8 @@
   "homepage": "https://github.com/process-engine/correlation.service#readme",
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "2.2.0-cf63a55e-b11",
-    "@process-engine/process_model.contracts": "2.7.0-acad6f21-b10",
+    "@process-engine/correlation.contracts": "2.2.0-beta.1",
+    "@process-engine/process_model.contracts": "2.7.0-beta.1",
     "loggerhythm": "^3.0.3"
   },
   "devDependencies": {
