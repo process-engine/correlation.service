@@ -179,7 +179,7 @@ export class CorrelationService implements ICorrelationService {
 
     const noCorrelationsFound = !processInstancesFromRepo || processInstancesFromRepo.length === 0;
     if (noCorrelationsFound) {
-      throw new NotFoundError(`Correlation with id "${correlationId}" not found.`);
+      throw new NotFoundError(`No ProcessInstances for Correlation with id "${correlationId}" found.`);
     }
 
     const filteredProcessInstancesFromRepo = await this.filterProcessInstancesFromRepoByIdentity(identity, processInstancesFromRepo);
