@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/correlation.service",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Contains the service layer for the Correlation API.",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
@@ -22,13 +22,14 @@
   "homepage": "https://github.com/process-engine/correlation.service#readme",
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "2.2.0-cf63a55e-b11",
-    "@process-engine/process_model.contracts": "2.7.0-acad6f21-b10",
+    "@process-engine/correlation.contracts": "3.0.0-alpha.1",
+    "@process-engine/process_model.contracts": "2.7.0-alpha.1",
     "loggerhythm": "^3.0.3"
   },
   "devDependencies": {
     "@essential-projects/eslint-config": "^1.0.0",
     "@process-engine/ci_tools": "^2.0.0",
+    "@types/bluebird-global": "^3.5.9",
     "@types/node": "^10.12.10",
     "eslint": "^5.16.0",
     "tsconfig": "^7.0.0",
