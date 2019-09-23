@@ -22,7 +22,7 @@
   "homepage": "https://github.com/process-engine/correlation.service#readme",
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
-    "@process-engine/correlation.contracts": "feature~flatten_correlation_types",
+    "@process-engine/correlation.contracts": "3.0.0-alpha.1",
     "@process-engine/process_model.contracts": "2.7.0-alpha.1",
     "loggerhythm": "^3.0.3"
   },
