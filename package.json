@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/correlation.service",
-  "version": "1.4.0-beta.1",
+  "version": "1.4.0-beta.2",
   "description": "Contains the service layer for the Correlation API.",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
